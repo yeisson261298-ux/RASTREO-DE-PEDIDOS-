@@ -11,7 +11,7 @@
 </head>
 <body>
 <div class="card">
-<img src="logo.png" id="logo" class="logo">
+<img src="logo.jpg" id="logo" class="logo">
 <h2 style="text-align:center;color:#2D0B5A;margin:0">INVENTA MANUALIDADES</h2>
 <p style="text-align:center;color:#666;margin:0 0 8px;font-size:13px">MAQUETAS • MANUALIDADES • EXPERIMENTOS • PROYECTOS ESCOLARES</p>
 <input id="pedido" value="INV-2847"><input id="cliente" value="María Torres"><input id="dir" value="Av. Artesanal 1245, Lima">
@@ -41,13 +41,11 @@ function compartir(){
    if(navigator.canShare && navigator.canShare({files:[file]})){
      navigator.share({files:[file],title:`Pedido ${pedido}`,text:text}).catch(()=>{});
    } else {
-     // Fallback para celulares antiguos: descarga y abre WhatsApp
      const a=document.createElement('a');a.download=file.name;a.href=canvas.toDataURL("image/jpeg",0.92);a.click();
      setTimeout(()=>{window.open(`https://wa.me/?text=${encodeURIComponent(text)}`,'_blank');},500);
    }
  },"image/jpeg",0.92);
 }
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js');}
 window.onload=()=>setTimeout(generar,500);
 </script>
 </body>
