@@ -1,8 +1,9 @@
 {
-  "name": "Inventa Manualidades - Rastreo de Pedidos",
-  "short_name": "Inventa Manualidades",
+  "name": "Inventa Manualidades - Rastreo",
+  "short_name": "Inventa Pedidos",
   "description": "Rastrea tu pedido de Inventa Manualidades",
-  "start_url": "./index.html",
+  "start_url": "/RASTREO-DE-PEDIDOS-/index.html",
+  "scope": "/RASTREO-DE-PEDIDOS-/",
   "display": "standalone",
   "background_color": "#00D1C1",
   "theme_color": "#00D1C1",
