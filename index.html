@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inventa - Generador Imagen</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#00D1C1">
+<link rel="icon" href="logo.jpg">
+<style>body{margin:0;font-family:system-ui;background:#00D1C1;padding:12px}.card{background:white;max-width:420px;margin:auto;border-radius:22px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,0.2)}input,select{width:100%;padding:13px;border-radius:12px;border:2px solid #ddd;margin:7px 0;box-sizing:border-box}.btn{width:100%;padding:15px;border:none;border-radius:14px;font-weight:800;color:white;margin:6px 0;cursor:pointer}.b-gen{background:#6C5CE7}.b-share{background:#25D366}.b-share2{background:#0084FF}#preview{width:100%;margin-top:12px;border-radius:12px;border:2px solid #eee;display:none}.logo{width:110px;height:110px;border-radius:50%;display:block;margin:0 auto 8px;border:3px solid #2D0B5A;object-fit:cover}</style>
+</head>
+<body>
+<div class="card">
+<img src="logo.png" id="logo" class="logo">
+<h2 style="text-align:center;color:#2D0B5A;margin:0">INVENTA MANUALIDADES</h2>
+<p style="text-align:center;color:#666;margin:0 0 8px;font-size:13px">MAQUETAS • MANUALIDADES • EXPERIMENTOS • PROYECTOS ESCOLARES</p>
+<input id="pedido" value="INV-2847"><input id="cliente" value="María Torres"><input id="dir" value="Av. Artesanal 1245, Lima">
+<select id="estado"><option value="0">📦 PEDIDO</option><option value="1">✂️ EN TALLER</option><option value="2" selected>🛵 EN CAMINO</option><option value="3">📍 PEDIDO EN EL LUGAR</option></select>
+<button class="btn b-gen" onclick="generar()">🎨 GENERAR IMAGEN</button>
+<canvas id="c" width="1080" height="1650" style="display:none"></canvas><img id="preview">
+<button class="btn b-share" onclick="compartir()" id="share" style="display:none">📲 COMPARTIR POR WHATSAPP / MESSENGER</button>
+<p id="msg" style="display:none;font-size:12px;color:#666;text-align:center">Se abrirá el menú de tu celular para elegir WhatsApp o Messenger con la imagen lista.</p>
+</div>
+<script>
+function generar(){
+ const canvas=document.getElementById('c');const ctx=canvas.getContext('2d');const pedido=document.getElementById('pedido').value;const cliente=document.getElementById('cliente').value;const dir=document.getElementById('dir').value;const idx=parseInt(document.getElementById('estado').value);const logo=document.getElementById('logo');
+ ctx.fillStyle="#00D1C1";ctx.fillRect(0,0,1080,1650);ctx.fillStyle="white";ctx.beginPath();ctx.roundRect(30,180,1020,1420,40);ctx.fill();
+ ctx.save();ctx.beginPath();ctx.arc(540,110,95,0,Math.PI*2);ctx.clip();try{ctx.drawImage(logo,445,15,190,190);}catch(e){}ctx.restore();
+ ctx.fillStyle="#2D0B5A";ctx.font="bold 48px Arial";ctx.fillText("Seguimiento de Pedido",60,310);ctx.font="26px Arial";ctx.fillStyle="#555";ctx.fillText("Pedido #"+pedido+" • "+cliente,60,355);
+ const estados=[{t:"PEDIDO",d:"Pedido confirmado",ic:"📦"},{t:"EN TALLER",d:"Tu manualidad está en producción",ic:"✂️"},{t:"EN CAMINO",d:"En ruta con nuestro mensajero",ic:"🛵"},{t:"PEDIDO EN EL LUGAR",d:"Entregado / En el lugar",ic:"📍"}];
+ let y=450;estados.forEach((e,i)=>{let done=i<idx,curr=i==idx;if(i<3){ctx.strokeStyle=done||curr?"#00B894":"#eee";ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(110,y+70);ctx.lineTo(110,y+160);ctx.stroke();}ctx.fillStyle=done?"#00B894":curr?"#6C5CE7":"#ddd";ctx.beginPath();ctx.arc(110,y+35,38,0,Math.PI*2);ctx.fill();ctx.fillStyle="white";ctx.font="bold 32px Arial";ctx.textAlign="center";ctx.fillText(done?"✓":e.ic,110,y+48);ctx.textAlign="left";ctx.fillStyle=done||curr?"#2D0B5A":"#aaa";ctx.font="bold 36px Arial";ctx.fillText(e.t,190,y+28);ctx.fillStyle="#555";ctx.font="26px Arial";ctx.fillText(e.d,190,y+68);let hora=curr?"Hoy • "+new Date().toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}):done?"Completado":"Pendiente";ctx.fillStyle="#f1f2f6";ctx.fillRect(190,y+85,400,34);ctx.fillStyle=curr?"#6C5CE7":"#666";ctx.font="bold 22px Arial";ctx.fillText(hora,200,y+110);y+=190;});
+ ctx.fillStyle="#F5F0FF";ctx.beginPath();ctx.roundRect(60,y+10,960,110,20);ctx.fill();ctx.fillStyle="#2D0B5A";ctx.font="bold 26px Arial";ctx.fillText("📍 Entrega: "+dir.slice(0,40),90,y+50);ctx.font="20px Arial";ctx.fillStyle="#333";ctx.fillText("MAQUETAS • MANUALIDADES • EXPERIMENTOS • PROYECTOS ESCOLARES",90,y+85);
+ document.getElementById('preview').src=canvas.toDataURL("image/jpeg",0.92);document.getElementById('preview').style.display="block";document.getElementById('share').style.display="block";document.getElementById('msg').style.display="block";
+}
+function compartir(){
+ const canvas=document.getElementById('c');
+ const pedido=document.getElementById('pedido').value;
+ canvas.toBlob(blob=>{
+   const file=new File([blob],`INVENTA-${pedido}.jpg`,{type:"image/jpeg"});
+   const text=`Hola! Te comparto el seguimiento de tu pedido ${pedido} - INVENTA MANUALIDADES`;
+   if(navigator.canShare && navigator.canShare({files:[file]})){
+     navigator.share({files:[file],title:`Pedido ${pedido}`,text:text}).catch(()=>{});
+   } else {
+     // Fallback para celulares antiguos: descarga y abre WhatsApp
+     const a=document.createElement('a');a.download=file.name;a.href=canvas.toDataURL("image/jpeg",0.92);a.click();
+     setTimeout(()=>{window.open(`https://wa.me/?text=${encodeURIComponent(text)}`,'_blank');},500);
+   }
+ },"image/jpeg",0.92);
+}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js');}
+window.onload=()=>setTimeout(generar,500);
+</script>
+</body>
+</html>
